@@ -77,7 +77,7 @@ public class ReadyToReceive {
 		for (int i = 0; i < mrsize; i++) {
 			long addr = buffer.getLong();
 			int lkey = buffer.getInt();
-			IbvMr mr = new IbvMr(null, addr, 0, lkey, 0, 0);
+			IbvMr mr = new IbvMr(null, addr, 0, 7, lkey, 0, 0);
 			mrList.add(mr);
 		}
 	}
