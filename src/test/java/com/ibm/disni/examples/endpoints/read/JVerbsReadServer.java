@@ -26,19 +26,19 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 
-import com.ibm.disni.endpoints.RdmaActiveEndpointGroup;
-import com.ibm.disni.endpoints.RdmaEndpointFactory;
-import com.ibm.disni.endpoints.RdmaServerEndpoint;
+import com.ibm.disni.rdma.RdmaActiveEndpointGroup;
+import com.ibm.disni.rdma.RdmaEndpointFactory;
+import com.ibm.disni.rdma.RdmaServerEndpoint;
+import com.ibm.disni.rdma.verbs.IbvMr;
+import com.ibm.disni.rdma.verbs.RdmaCmId;
 import com.ibm.disni.util.GetOpt;
-import com.ibm.disni.verbs.IbvMr;
-import com.ibm.disni.verbs.RdmaCmId;
 
 public class JVerbsReadServer implements RdmaEndpointFactory<CustomServerEndpoint> {
 	private String ipAddress;
 	private RdmaActiveEndpointGroup<CustomServerEndpoint> endpointGroup;
 	
-	public CustomServerEndpoint createClientEndpoint(RdmaCmId idPriv) throws IOException {
-		return new CustomServerEndpoint(endpointGroup, idPriv);
+	public CustomServerEndpoint createEndpoint(RdmaCmId idPriv, boolean serverSide) throws IOException {
+		return new CustomServerEndpoint(endpointGroup, idPriv, serverSide);
 	}	
 	
 	public void run() throws Exception {
@@ -72,7 +72,7 @@ public class JVerbsReadServer implements RdmaEndpointFactory<CustomServerEndpoin
 		
 		//post the operation to send the message
 		System.out.println("ReadServer::sending message");
-		endpoint.postSend(endpoint.getWrList_send()).execute().free().success();
+		endpoint.postSend(endpoint.getWrList_send()).execute().free();
 		//we have to wait for the CQ event, only then we know the message has been sent out
 		endpoint.getWcEvents().take();
 		

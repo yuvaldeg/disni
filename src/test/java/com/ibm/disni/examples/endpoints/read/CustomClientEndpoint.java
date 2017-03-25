@@ -25,13 +25,13 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.LinkedList;
 
-import com.ibm.disni.endpoints.RdmaActiveEndpointGroup;
 import com.ibm.disni.examples.endpoints.common.CustomEndpoint;
-import com.ibm.disni.verbs.IbvMr;
-import com.ibm.disni.verbs.IbvRecvWR;
-import com.ibm.disni.verbs.IbvSendWR;
-import com.ibm.disni.verbs.IbvSge;
-import com.ibm.disni.verbs.RdmaCmId;
+import com.ibm.disni.rdma.RdmaActiveEndpointGroup;
+import com.ibm.disni.rdma.verbs.IbvMr;
+import com.ibm.disni.rdma.verbs.IbvRecvWR;
+import com.ibm.disni.rdma.verbs.IbvSendWR;
+import com.ibm.disni.rdma.verbs.IbvSge;
+import com.ibm.disni.rdma.verbs.RdmaCmId;
 
 public class CustomClientEndpoint extends CustomEndpoint {
 	private ByteBuffer buffers[];
@@ -55,8 +55,8 @@ public class CustomClientEndpoint extends CustomEndpoint {
 	private LinkedList<IbvSge> sgeListRecv;
 	private IbvRecvWR recvWR;
 
-	public CustomClientEndpoint(RdmaActiveEndpointGroup<? extends CustomClientEndpoint> endpointGroup, RdmaCmId idPriv) throws IOException {	
-		super(endpointGroup, idPriv);
+	public CustomClientEndpoint(RdmaActiveEndpointGroup<? extends CustomClientEndpoint> endpointGroup, RdmaCmId idPriv, boolean isServerSide) throws IOException {	
+		super(endpointGroup, idPriv, isServerSide);
 		this.buffercount = 3;
 		this.buffersize = 100;
 		buffers = new ByteBuffer[buffercount];

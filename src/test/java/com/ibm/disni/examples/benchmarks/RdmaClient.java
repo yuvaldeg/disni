@@ -30,24 +30,24 @@ import java.util.LinkedList;
 
 import org.slf4j.Logger;
 
+import com.ibm.disni.rdma.verbs.IbvCQ;
+import com.ibm.disni.rdma.verbs.IbvCompChannel;
+import com.ibm.disni.rdma.verbs.IbvContext;
+import com.ibm.disni.rdma.verbs.IbvMr;
+import com.ibm.disni.rdma.verbs.IbvPd;
+import com.ibm.disni.rdma.verbs.IbvQP;
+import com.ibm.disni.rdma.verbs.IbvQPInitAttr;
+import com.ibm.disni.rdma.verbs.IbvRecvWR;
+import com.ibm.disni.rdma.verbs.IbvSendWR;
+import com.ibm.disni.rdma.verbs.IbvSge;
+import com.ibm.disni.rdma.verbs.RdmaCm;
+import com.ibm.disni.rdma.verbs.RdmaCmEvent;
+import com.ibm.disni.rdma.verbs.RdmaCmId;
+import com.ibm.disni.rdma.verbs.RdmaConnParam;
+import com.ibm.disni.rdma.verbs.RdmaEventChannel;
+import com.ibm.disni.rdma.verbs.RdmaVerbs;
 import com.ibm.disni.util.DiSNILogger;
 import com.ibm.disni.util.StopWatch;
-import com.ibm.disni.verbs.IbvCQ;
-import com.ibm.disni.verbs.IbvCompChannel;
-import com.ibm.disni.verbs.IbvContext;
-import com.ibm.disni.verbs.IbvMr;
-import com.ibm.disni.verbs.IbvPd;
-import com.ibm.disni.verbs.IbvQP;
-import com.ibm.disni.verbs.IbvQPInitAttr;
-import com.ibm.disni.verbs.IbvRecvWR;
-import com.ibm.disni.verbs.IbvSendWR;
-import com.ibm.disni.verbs.IbvSge;
-import com.ibm.disni.verbs.RdmaCm;
-import com.ibm.disni.verbs.RdmaCmEvent;
-import com.ibm.disni.verbs.RdmaCmId;
-import com.ibm.disni.verbs.RdmaConnParam;
-import com.ibm.disni.verbs.RdmaEventChannel;
-import com.ibm.disni.verbs.RdmaVerbs;
 
 public class RdmaClient extends BenchmarkBase implements IBenchmarkTask { 
 	private static final Logger logger = DiSNILogger.getLogger();
@@ -374,13 +374,9 @@ public class RdmaClient extends BenchmarkBase implements IBenchmarkTask {
 			double ops = 0;
 			for (int i = 0; i < loop; i++) {
 				if (testCase == AppLauncher.TestCase.WRITE) {
-					boolean ok = dataPlane.initSGRecv(recvFragments, wrList_recv);
-					if (!ok){
-						logger.info("init recv failed");
-						return;
-					}
+					dataPlane.initSGRecv(recvFragments, wrList_recv);
 					controlPlane.startNextRound(client2serverBuffer[0]);
-					ok = dataPlane.completeSGRecv(recvFragments, wrList_recv, polling);
+					boolean ok = dataPlane.completeSGRecv(recvFragments, wrList_recv, polling);
 					if (!ok){
 						logger.info("complete recv failed");
 						return;
@@ -395,19 +391,14 @@ public class RdmaClient extends BenchmarkBase implements IBenchmarkTask {
 						this.errorOps += 1.0;
 					}
 				}  else if (testCase == AppLauncher.TestCase.PING || testCase == AppLauncher.TestCase.RPC_INT || testCase == AppLauncher.TestCase.RPC_ARRAY || testCase == AppLauncher.TestCase.RPC_COMPLEX) {
-					boolean ok = dataPlane.initSGRecv(recvFragments, wrList_recv);
-					if (!ok){
-						logger.info("init recv failed");
-						return;
-					} 
-					
+					dataPlane.initSGRecv(recvFragments, wrList_recv);
 					if (testCase == AppLauncher.TestCase.RPC_INT){
 						stub.marshallInt(rpcBuf);
 					} else if (testCase == AppLauncher.TestCase.RPC_ARRAY){
 						stub.marshallArray(rpcBuf);
 					}
 					
-					ok = dataPlane.send(recvFragments, wrList_send, true, polling);
+					boolean ok = dataPlane.send(recvFragments, wrList_send, true, polling);
 					if (!ok){
 						logger.info("send failed");
 						return;

@@ -26,19 +26,19 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 
-import com.ibm.disni.endpoints.RdmaActiveEndpointGroup;
-import com.ibm.disni.endpoints.RdmaEndpointFactory;
-import com.ibm.disni.endpoints.RdmaServerEndpoint;
 import com.ibm.disni.examples.endpoints.read.CustomServerEndpoint;
+import com.ibm.disni.rdma.RdmaActiveEndpointGroup;
+import com.ibm.disni.rdma.RdmaEndpointFactory;
+import com.ibm.disni.rdma.RdmaServerEndpoint;
+import com.ibm.disni.rdma.verbs.RdmaCmId;
 import com.ibm.disni.util.GetOpt;
-import com.ibm.disni.verbs.RdmaCmId;
 
 public class JVerbsSimpleServer implements RdmaEndpointFactory<CustomServerEndpoint> {
 	private String ipAddress;
 	RdmaActiveEndpointGroup<CustomServerEndpoint> endpointGroup;
 	
-	public CustomServerEndpoint createClientEndpoint(RdmaCmId idPriv) throws IOException {
-		return new CustomServerEndpoint(endpointGroup, idPriv);
+	public CustomServerEndpoint createEndpoint(RdmaCmId idPriv, boolean serverSide) throws IOException {
+		return new CustomServerEndpoint(endpointGroup, idPriv, serverSide);
 	}	
 	
 	public void run() throws Exception {
